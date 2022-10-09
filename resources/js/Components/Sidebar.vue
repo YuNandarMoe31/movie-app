@@ -42,6 +42,7 @@
         <nav class="mt-10">
             <Link
                 class="flex items-center mt-4 py-2 px-6 bg-gray-700 bg-opacity-25 text-gray-100"
+                :href="route('admin.index')"
             >
                 <svg
                     class="h-6 w-6"
@@ -69,7 +70,7 @@
 
             <Link
                 class="flex items-center mt-4 py-2 px-6 text-gray-500 hover:bg-gray-700 hover:bg-opacity-25 hover:text-gray-100"
-               
+                :href="route('admin.movies.index')"
             >
                 <svg
                     class="h-6 w-6"
@@ -90,7 +91,7 @@
             </Link>
             <Link
                 class="flex items-center mt-4 py-2 px-6 text-gray-500 hover:bg-gray-700 hover:bg-opacity-25 hover:text-gray-100"
-                
+                :href="route('admin.tv-shows.index')"
             >
                 <svg
                     class="h-6 w-6"
@@ -111,7 +112,7 @@
             </Link>
             <Link
                 class="flex items-center mt-4 py-2 px-6 text-gray-500 hover:bg-gray-700 hover:bg-opacity-25 hover:text-gray-100"
-               
+                :href="route('admin.genres.index')"
             >
                 <svg
                     class="h-6 w-6"
@@ -132,7 +133,7 @@
             </Link>
             <Link
                 class="flex items-center mt-4 py-2 px-6 text-gray-500 hover:bg-gray-700 hover:bg-opacity-25 hover:text-gray-100"
-               
+                :href="route('admin.casts.index')"
             >
                 <svg
                     class="h-6 w-6"
@@ -153,7 +154,7 @@
             </Link>
             <Link
                 class="flex items-center mt-4 py-2 px-6 text-gray-500 hover:bg-gray-700 hover:bg-opacity-25 hover:text-gray-100"
-               
+                :href="route('admin.tags.index')"
             >
                 <svg
                     class="h-6 w-6"
