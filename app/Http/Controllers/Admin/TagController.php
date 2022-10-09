@@ -73,9 +73,11 @@ class TagController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Tag $tag)
     {
-        //
+        return Inertia::render('Tags/Edit', [
+            'tag' => $tag
+        ]);
     }
 
     /**
@@ -85,9 +87,15 @@ class TagController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Tag $tag)
     {
-        //
+        $tag->update([
+            'tag_name' => Request::input('tagName'),
+            'slug' => Str::slug(Request::input('tagName'))
+        ]);
+
+        return redirect()->route('admin.tags.index')
+            ->with('flash.banner', 'Tag Updated Successfully.');
     }
 
     /**
@@ -96,8 +104,12 @@ class TagController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Tag $tag)
     {
-        //
+        $tag->delete();
+
+        return redirect()->route('admin.tags.index')
+            ->with('flash.banner', 'Tag deleted Successfully.')
+            ->with('flash.bannerStyle', 'danger');
     }
 }
