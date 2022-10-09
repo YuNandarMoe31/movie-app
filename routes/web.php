@@ -34,3 +34,7 @@ Route::middleware([
         return Inertia::render('Dashboard');
     })->name('dashboard');
 });
+
+Route::get('/admin', function() {
+    return Inertia::render('Admin/Index');
+});
