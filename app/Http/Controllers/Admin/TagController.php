@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Tag;
 use Inertia\Inertia;
-use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Request;
 
 class TagController extends Controller
 {
@@ -34,9 +36,14 @@ class TagController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store()
     {
-        //
+        Tag::create([
+            'tag_name' => Request::input('tagName'),
+            'slug' => Str::slug(Request::input('tagName')),
+        ]);
+
+        return redirect()->route('admin.tags.index');
     }
 
     /**

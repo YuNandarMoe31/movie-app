@@ -1,6 +1,6 @@
 <template>
     <admin-layout title="Dashboard">
-        <template>
+        <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Tags Create
             </h2>
@@ -15,7 +15,7 @@
                 </Link>
             </div>
             <section class="flex content-center">
-                <form>
+                <form @submit.prevent="storeTag">
                     <div class="shadow overflow-hidden sm:rounded-md">
                         <div class="px-4 py-5 bg-white sm:p-6">
                             <div class="w-full space-y-3">
@@ -26,6 +26,7 @@
                                         >Tag name</label
                                     >
                                     <input
+                                        v-model="form.tagName"
                                         type="text"
                                         autocomplete="given-name"
                                         class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
@@ -50,4 +51,13 @@
 
 <script setup>
 import AdminLayout from "@/Layouts/AdminLayout.vue";
+import { Link, useForm } from "@inertiajs/inertia-vue3";
+
+const form = useForm ({
+    tagName: '',
+})
+
+function storeTag() {
+    form.post('/admin/tags');
+}
 </script>

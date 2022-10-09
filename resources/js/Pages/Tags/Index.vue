@@ -1,6 +1,6 @@
 <template>
     <admin-layout title="Dashboard">
-        <template>
+        <template #header>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Tags Index
             </h2>
