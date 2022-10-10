@@ -18,22 +18,18 @@ class CastController extends Controller
      */
     public function index()
     {
+        $perPage = Request::input('perPage') ?: 5;
         return Inertia::render('Casts/Index', [
-            'casts' => Cast::paginate(5),
+            'casts' => Cast::query()
+                ->when(Request::input('search'), function($query, $search) {
+                    $query->where('name', 'like', "%{$search}%");      
+                })
+                ->paginate($perPage)
+                ->withQueryString(),
             'filters' => Request::only(['search', 'perPage'])
         ]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        
-    }
-
+    
     /**
      * Store a newly created resource in storage.
      *
@@ -45,7 +41,7 @@ class CastController extends Controller
         $cast = Cast::where('tmdb_id', Request::input('castTMDBId'))->first();
 
         if($cast) {
-            return redirect()->route('admin.casts.index')
+            return redirect()->back()
             ->with('flash.banner', 'Cast Exists.');
         }
 
@@ -58,23 +54,12 @@ class CastController extends Controller
                 'slug'    => Str::slug($tmdb_cast['name']),
                 'poster_path' => $tmdb_cast['profile_path']
             ]);
-            return redirect()->route('admin.casts.index')
+            return redirect()->back()
                 ->with('flash.banner', 'Cast Created Successfully.');
         } else {
-            return redirect()->route('admin.casts.index')
+            return redirect()->back()
                 ->with('flash.banner', 'API Error.');
         }
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
     }
 
     /**
@@ -83,9 +68,11 @@ class CastController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Cast $cast)
     {
-        //
+        return Inertia::render('Casts/Edit', [
+            'cast' => $cast
+        ]);
     }
 
     /**
@@ -95,9 +82,17 @@ class CastController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Cast $cast)
     {
-        //
+        $validated = Request::validate([
+            'name' => 'required',
+            'poster_path' => 'required'
+        ]);
+
+        $cast->update($validated);
+
+        return redirect()->route('admin.casts.index')
+            ->with('flash.banner', 'Cast Updated Successfully.');
     }
 
     /**
@@ -106,8 +101,10 @@ class CastController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Cast $cast)
     {
-        //
+        $cast->delete();
+        return redirect()->route('admin.casts.index')
+            ->with('flash.banner', 'Cast Deleted Successfully.');
     }
 }
