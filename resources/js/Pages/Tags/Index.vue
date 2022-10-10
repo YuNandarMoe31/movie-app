@@ -154,4 +154,3 @@ function getTags() {
 
 </script>
 
-<style></style>
