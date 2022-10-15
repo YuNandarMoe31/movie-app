@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Inertia\Inertia;
+use App\Models\Season;
+use App\Models\TvShow;
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Request;
 
 class SeasonController extends Controller
 {
@@ -12,9 +15,21 @@ class SeasonController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(TvShow $tvShow)
     {
-        //
+        $perPage = Request::input('perPage') ?: 5;
+        
+        return Inertia::render('TvShows/Seasons/Index', [
+            'seasons' => Season::query()
+                ->where('tv_show_id', $tvShow->id)
+                ->when(Request::input('search'), function($query, $search) {
+                    $query->where('name', 'like', "%{$search}%");      
+                })
+                ->paginate($perPage)
+                ->withQueryString(),
+            'filters' => Request::only(['search', 'perPage']),
+            'tvShow' => $tvShow
+        ]);  
     }
 
     /**
