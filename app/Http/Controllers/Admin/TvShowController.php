@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use Inertia\Inertia;
 use App\Models\TvShow;
+use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Request;
 
 class TvShowController extends Controller
@@ -30,35 +32,31 @@ class TvShowController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store()
     {
-        //
-    }
+        $tvShow = TvShow::where('tmdb_id', Request::input('tvShowTMDBId'))->first();
+        if ($tvShow) {
+            return redirect()->back()->with('flash.banner', 'Tv Show Exists.');
+        }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
+        $tmdb_tv = Http::asJson()->get(config('services.tmdb.endpoint') . 'tv/' . Request::input('tvShowTMDBId') . '?api_key=' . config('services.tmdb.secret') . '&language=en-US');
+        if ($tmdb_tv->successful()) {
+            TvShow::create([
+                'tmdb_id' => $tmdb_tv['id'],
+                'name'    => $tmdb_tv['name'],
+                'slug'    => Str::slug($tmdb_tv['name']),
+                'poster_path' => $tmdb_tv['poster_path'],
+                'created_year' => $tmdb_tv['first_air_date']
+            ]);
+            return redirect()->back()->with('flash.banner', 'Tv Show created.');
+        } else {
+            return redirect()->back()->with('flash.banner', 'Api error.');
+        }  
     }
 
     /**
@@ -67,9 +65,11 @@ class TvShowController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(TvShow $tvShow)
     {
-        //
+        return Inertia::render('TvShows/Edit', [
+            'tvShow' => $tvShow
+        ]);
     }
 
     /**
@@ -79,9 +79,16 @@ class TvShowController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(TvShow $tvShow)
     {
-        //
+        $validated = Request::validate([
+            'name' => 'required',
+            'poster_path' => 'required',
+        ]);
+
+        $tvShow->update($validated);
+
+        return redirect()->route('admin.tv-shows.index')->with('flash.banner', 'TvShow updated successfully.');
     }
 
     /**
@@ -90,8 +97,10 @@ class TvShowController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(TvShow $tvShow)
     {
-        //
+        $tvShow->delete();
+
+        return redirect()->route('admin.tv-shows.index')->with('flash.banner', 'TvShow deleted successfully.');
     }
 }
