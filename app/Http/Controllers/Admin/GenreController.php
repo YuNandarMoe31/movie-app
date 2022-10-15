@@ -30,16 +30,6 @@ class GenreController extends Controller
         ]);    }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -71,25 +61,16 @@ class GenreController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Genre $genre)
     {
-        //
+        return Inertia::render('Genres/Edit', [
+            'genre' => $genre
+        ]);
     }
 
     /**
@@ -99,9 +80,14 @@ class GenreController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Genre $genre)
     {
-        //
+        $genre->update(Request::validate([
+            'title' => 'required'
+        ]));
+
+        return redirect()->route('admin.genres.index')
+            ->with('flash.banner', 'Genre Updated Successfully.');
     }
 
     /**
@@ -110,8 +96,10 @@ class GenreController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Genre $genre)
     {
-        //
+        $genre->delete();
+        return redirect()->route('admin.genres.index')
+            ->with('flash.banner', 'Genre Deleted Successfully.');
     }
 }
