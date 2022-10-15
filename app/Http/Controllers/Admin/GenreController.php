@@ -27,7 +27,8 @@ class GenreController extends Controller
                 ->paginate($perPage)
                 ->withQueryString(),
             'filters' => Request::only(['search', 'perPage'])
-        ]);    }
+        ]);   
+    }
 
     /**
      * Store a newly created resource in storage.
