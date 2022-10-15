@@ -24,4 +24,9 @@ class Season extends Model
         $this->attributes['name'] = $value;
         $this->attributes['slug'] = Str::slug($value);
     }
+
+    public function episodes()
+    {
+        return $this->hasMany(Episode::class);
+    }
 }

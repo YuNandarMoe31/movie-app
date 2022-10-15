@@ -12,7 +12,7 @@
                             <div class="p-1 flex items-center">
                                 <label for="tmdb_id_g" class="block text-sm font-medium text-gray-700 mr-4">Episode Number</label>
                                 <div class="relative rounded-md shadow-sm">
-                                    <input v-model="epidsodeNumber" id="tmdb_id_g" name="tmdb_id_g"
+                                    <input v-model="episodeNumber" id="tmdb_id_g" name="tmdb_id_g"
                                         class="px-3 py-2 border border-gray-300 rounded" placeholder="Episode Number" />
                                 </div>
                             </div>
@@ -77,12 +77,43 @@
                                     <TableHead>Manage</TableHead>
                                 </template>
                                 <TableRow 
-                                    v-for="episodes in episodes.data"
-                                    :key="episodes.id">
-                                    <TableData>{{ episodes.name }}</TableData>
-                                    <TableData>{{ episodes.slug }}</TableData>
-                                    <TableData>{{ episodes.episode_number }}</TableData>
-                                    <TableData>{{ episodes.is_public }}</TableData>
+                                    v-for="episode in episodes.data"
+                                    :key="episode.id">
+                                    <TableData>{{ episode.name }}</TableData>
+                                    <TableData>{{ episode.slug }}</TableData>
+                                    <TableData>{{ episode.episode_number }}</TableData>
+                                    <TableData>
+                                        <span
+                                            v-if="episode.is_public"
+                                            class="
+                                                px-2
+                                                inline-flex
+                                                text-xs
+                                                leading-5
+                                                font-semibold
+                                                rounded-full
+                                                bg-green-100
+                                                text-green-800
+                                            "
+                                            >
+                                            Published
+                                        </span>
+                                        <span
+                                            v-else
+                                            class="
+                                                px-2
+                                                inline-flex
+                                                text-xs
+                                                leading-5
+                                                font-semibold
+                                                rounded-full
+                                                bg-red-100
+                                                text-red-800
+                                            "
+                                            >
+                                            UnPublished
+                                        </span>
+                                    </TableData>
                                     <TableData>
                                         <div class="flex justify-around">
                                             <ButtonLink :link="route('admin.episodes.edit', [tvShow.id, season.id, episode.id])">Edit</ButtonLink>
@@ -117,7 +148,7 @@ import { Inertia } from "@inertiajs/inertia";
 
 const props = defineProps({
     tvShow: Object,
-    seasons: Object,
+    season: Object,
     episodes: Object,
     filters: Object
 });
@@ -127,7 +158,7 @@ const perPage = ref(props.filters.perPage);
 const episodeNumber = ref("");
 
 watch(search, value => {
-    Inertia.get(`/admin/tv-shows/${props.tvShow.id}/seasons`,
+    Inertia.get(`/admin/tv-shows/${props.tvShow.id}/seasons/${props.season.id}/episodes`,
         { search: value, perPage: perPage.value },
         {
             preserveState: true,
