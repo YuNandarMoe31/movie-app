@@ -1,7 +1,7 @@
 <template>
     <admin-layout title="Dashboard">
         <template #header>
-            Seasons Index
+            Episodes Index
         </template>
 
         <div class="py-12">
@@ -10,14 +10,14 @@
                     <div class="w-full flex mb-4 p-2 justify-end">
                         <form class="flex space-x-4 shadow bg-white rounded-md m-2 p-2">
                             <div class="p-1 flex items-center">
-                                <label for="tmdb_id_g" class="block text-sm font-medium text-gray-700 mr-4">Season Id</label>
+                                <label for="tmdb_id_g" class="block text-sm font-medium text-gray-700 mr-4">Episode Number</label>
                                 <div class="relative rounded-md shadow-sm">
-                                    <input v-model="seasonNumber" id="tmdb_id_g" name="tmdb_id_g"
-                                        class="px-3 py-2 border border-gray-300 rounded" placeholder="Season Number" />
+                                    <input v-model="epidsodeNumber" id="tmdb_id_g" name="tmdb_id_g"
+                                        class="px-3 py-2 border border-gray-300 rounded" placeholder="Episode Number" />
                                 </div>
                             </div>
                             <div class="p-1">
-                                <button type="button" @click="generateSeason"
+                                <button type="button" @click="generateEpisode"
                                     class="inline-flex items-center justify-center py-2 px-4 border border-transparent text-base leading-6 font-medium rounded-md text-white bg-green-600 hover:bg-green-500 focus:outline-none focus:border-indigo-700 focus:shadow-outline-indigo active:bg-green-700 transition duration-150 ease-in-out disabled:opacity-50">
                                     <span>Generate</span>
                                 </button>
@@ -57,7 +57,7 @@
                             <div class="flex">
                                 <select
                                     v-model="perPage"
-                                    @change="getSeasons"
+                                    @change="getEpisodes"
                                     class="px-4 py-3 w-full rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 text-sm"
                                 >
                                     <option value="5">5 Per Page</option>
@@ -72,29 +72,28 @@
                                 <template #tableHead>
                                     <TableHead>Name</TableHead>
                                     <TableHead>Slug</TableHead>
-                                    <TableHead>Season Number</TableHead>
-                                    <TableHead>Poster</TableHead>
+                                    <TableHead>Episode Number</TableHead>
+                                    <TableHead>Public</TableHead>
                                     <TableHead>Manage</TableHead>
                                 </template>
                                 <TableRow 
-                                    v-for="season in seasons.data"
-                                    :key="season.id">
-                                    <TableData>{{ season.name }}</TableData>
-                                    <TableData>{{ season.slug }}</TableData>
-                                    <TableData>{{ season.season_number }}</TableData>
-                                    <TableData>{{ season.poster_path }}</TableData>
+                                    v-for="episodes in episodes.data"
+                                    :key="episodes.id">
+                                    <TableData>{{ episodes.name }}</TableData>
+                                    <TableData>{{ episodes.slug }}</TableData>
+                                    <TableData>{{ episodes.episode_number }}</TableData>
+                                    <TableData>{{ episodes.is_public }}</TableData>
                                     <TableData>
                                         <div class="flex justify-around">
-                                            <ButtonLink class="bg-blue-500 hover:bg-blue-700" :link="route('admin.episodes.index', [tvShow.id, season.id])">Episodes</ButtonLink>
-                                            <ButtonLink :link="route('admin.seasons.edit', [tvShow.id, season.id])">Edit</ButtonLink>
+                                            <ButtonLink :link="route('admin.episodes.edit', [tvShow.id, season.id, episode.id])">Edit</ButtonLink>
                                             <ButtonLink method="delete" as="button" type="button"
-                                                class="bg-red-500 hover:bg-red-700" :link="route('admin.seasons.destroy', [tvShow.id, season.id])">Delete</ButtonLink>
+                                                class="bg-red-500 hover:bg-red-700" :link="route('admin.episodes.destroy', [tvShow.id, season.id, episode.id])">Delete</ButtonLink>
                                         </div>
                                     </TableData>
                                 </TableRow>
                             </Table>
                             <div class="m-2 p-2">
-                                <Pagination :links="seasons.links" />
+                                <Pagination :links="episodes.links" />
                             </div>
                         </div>
                     </div>
@@ -119,12 +118,13 @@ import { Inertia } from "@inertiajs/inertia";
 const props = defineProps({
     tvShow: Object,
     seasons: Object,
+    episodes: Object,
     filters: Object
 });
 
 const search = ref(props.filters.search);
 const perPage = ref(props.filters.perPage);
-const seasonNumber = ref("");
+const episodeNumber = ref("");
 
 watch(search, value => {
     Inertia.get(`/admin/tv-shows/${props.tvShow.id}/seasons`,
@@ -136,8 +136,8 @@ watch(search, value => {
     )
 });
 
-function getSeasons() {
-    Inertia.get(`/admin/tv-shows/${props.tvShow.id}/seasons`,
+function getEpisodes() {
+    Inertia.get(`/admin/tv-shows/${props.tvShow.id}/seasons/${props.season.id}/episodes`,
         { perPage: perPage.value, search: search.value },
         {
             preserveState: true,
@@ -146,11 +146,11 @@ function getSeasons() {
     )
 }
 
-function generateSeason() {
-    Inertia.post(`/admin/tv-shows/${props.tvShow.id}/seasons`, 
-        { seasonNumber: seasonNumber.value }, 
+function generateEpisode() {
+    Inertia.post(`/admin/tv-shows/${props.tvShow.id}/seasons/${props.season.id}/episodes`, 
+        { episodeNumber: episodeNumber.value }, 
         {
-            onFinish: () => (seasonNumber.value = ""),
+            onFinish: () => (episodeNumber.value = ""),
         }
     );
 }
