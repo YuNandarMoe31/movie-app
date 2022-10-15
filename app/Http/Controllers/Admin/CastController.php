@@ -36,7 +36,7 @@ class CastController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store()
     {
         $cast = Cast::where('tmdb_id', Request::input('castTMDBId'))->first();
 
@@ -47,7 +47,7 @@ class CastController extends Controller
 
         $tmdb_cast = Http::get(config('services.tmdb.endpoint').'person/'. Request::input('castTMDBId') .'?api_key='. config('services.tmdb.secret') . '&language=en-US');
 
-        if ($tmdb_cast) {
+        if ($tmdb_cast->successful()) {
             Cast::create([
                 'tmdb_id' => $tmdb_cast['id'],
                 'name'    => $tmdb_cast['name'],
