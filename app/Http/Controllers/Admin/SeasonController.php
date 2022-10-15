@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use Inertia\Inertia;
 use App\Models\Season;
 use App\Models\TvShow;
+use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Request;
 
 class SeasonController extends Controller
@@ -33,35 +35,32 @@ class SeasonController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(TvShow $tvShow)
     {
-        //
-    }
+        $season = $tvShow->seasons()->where('season_number', Request::input('seasonNumber'))->exists();        
+        if ($season) {
+            return redirect()->back()->with('flash.banner', 'Season Exists.');
+        }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
+        $tmdb_season = Http::asJson()->get(config('services.tmdb.endpoint') . 'tv/' . $tvShow->tmdb_id . '/season/' . Request::input('seasonNumber') . '?api_key=' . config('services.tmdb.secret') . '&language=en-US');
+        if ($tmdb_season->successful()) {
+            Season::create([
+                'tmdb_id' => $tmdb_season['id'],
+                'tv_show_id' => $tvShow['id'],
+                'name'    => $tmdb_season['name'],
+                'slug'    => Str::slug($tmdb_season['name']),
+                'poster_path' => $tmdb_season['poster_path'],
+                'season_number' => $tmdb_season['season_number']
+            ]);
+            return redirect()->back()->with('flash.banner', 'Season created.');
+        } else {
+            return redirect()->back()->with('flash.banner', 'Api error.');
+        }  
     }
 
     /**
@@ -70,9 +69,12 @@ class SeasonController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(TvShow $tvShow, Season $season)
     {
-        //
+        return Inertia::render('TvShows/Seasons/Edit', [
+            'tvShow' => $tvShow,
+            'season' => $season
+        ]);
     }
 
     /**
@@ -82,9 +84,16 @@ class SeasonController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(TvShow $tvShow, Season $season)
     {
-        //
+        $validated = Request::validate([
+            'name' => 'required',
+            'poster_path' => 'required',
+        ]);
+
+        $season->update($validated);
+
+        return redirect()->route('admin.seasons.index', $tvShow->id)->with('flash.banner', 'Season updated successfully.');
     }
 
     /**
@@ -93,8 +102,10 @@ class SeasonController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(TvShow $tvShow, Season $season)
     {
-        //
+        $season->delete();
+
+        return redirect()->route('admin.seasons.index', $tvShow->id)->with('flash.banner', 'Season deleted successfully.');
     }
 }

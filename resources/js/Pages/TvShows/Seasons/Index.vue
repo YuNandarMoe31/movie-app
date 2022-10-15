@@ -12,8 +12,8 @@
                             <div class="p-1 flex items-center">
                                 <label for="tmdb_id_g" class="block text-sm font-medium text-gray-700 mr-4">Season Id</label>
                                 <div class="relative rounded-md shadow-sm">
-                                    <input v-model="seasonsTMDBId" id="tmdb_id_g" name="tmdb_id_g"
-                                        class="px-3 py-2 border border-gray-300 rounded" placeholder="Season ID" />
+                                    <input v-model="seasonNumber" id="tmdb_id_g" name="tmdb_id_g"
+                                        class="px-3 py-2 border border-gray-300 rounded" placeholder="Season Number" />
                                 </div>
                             </div>
                             <div class="p-1">
@@ -117,14 +117,14 @@ import { ref, watch, defineProps } from 'vue';
 import { Inertia } from "@inertiajs/inertia";
 
 const props = defineProps({
-    tvShows: Object,
+    tvShow: Object,
     seasons: Object,
     filters: Object
 });
 
 const search = ref(props.filters.search);
 const perPage = ref(props.filters.perPage);
-const seasonsTMDBId = ref("");
+const seasonNumber = ref("");
 
 watch(search, value => {
     Inertia.get(`/admin/tv-shows/${props.tvShow.id}/seasons`,
@@ -148,9 +148,9 @@ function getSeasons() {
 
 function generateSeason() {
     Inertia.post(`/admin/tv-shows/${props.tvShow.id}/seasons`, 
-        { seasonsTMDBId: seasonsTMDBId.value }, 
+        { seasonNumber: seasonNumber.value }, 
         {
-            onFinish: () => (seasonsTMDBId.value = ""),
+            onFinish: () => (seasonNumber.value = ""),
         }
     );
 }
