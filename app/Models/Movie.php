@@ -35,4 +35,19 @@ class Movie extends Model
     {
         return $this->belongsToMany(Genre::class, 'genre_movie');
     }
+
+    public function trailers()
+    {
+        return $this->morphMany(TrailerUrl::class, 'trailerable');
+    }
+
+    public function tags()
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+
+    public function casts()
+    {
+        return $this->belongsToMany(Cast::class, 'cast_movie');
+    }
 }

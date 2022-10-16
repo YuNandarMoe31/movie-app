@@ -120,7 +120,8 @@
                                         </span>
                                     </TableData>
                                     <TableData>
-                                        <div class="flex justify-around">
+                                        <div class="flex space-x-2">
+                                            <ButtonLink :link="route('admin.movies.attach', movie.id)">Attach</ButtonLink>
                                             <ButtonLink :link="route('admin.movies.edit', movie.id)">Edit</ButtonLink>
                                             <ButtonLink method="delete" as="button" type="button"
                                                 class="bg-red-500 hover:bg-red-700" :link="route('admin.movies.destroy', movie.id)">Delete</ButtonLink>
