@@ -81,8 +81,44 @@
                                     :key="movie.id">
                                     <TableData>{{ movie.title }}</TableData>
                                     <TableData>{{ movie.slug }}</TableData>
-                                    <TableData>{{ movie.poster_path }}</TableData>
-                                    <TableData>{{ movie.is_public }}</TableData>
+                                    <TableData>
+                                        <img
+                                            class="h-12 w-12 rounded"
+                                            :src="`https://www.themoviedb.org/t/p/w220_and_h330_face/${movie.poster_path}`"
+                                            />
+                                    </TableData>
+                                    <TableData>
+                                        <span
+                                            v-if="movie.is_public"
+                                            class="
+                                                px-2
+                                                inline-flex
+                                                text-xs
+                                                leading-5
+                                                font-semibold
+                                                rounded-full
+                                                bg-green-100
+                                                text-green-800
+                                            "
+                                            >
+                                            Published
+                                        </span>
+                                        <span
+                                            v-else
+                                            class="
+                                                px-2
+                                                inline-flex
+                                                text-xs
+                                                leading-5
+                                                font-semibold
+                                                rounded-full
+                                                bg-red-100
+                                                text-red-800
+                                            "
+                                            >
+                                            UnPublished
+                                        </span>
+                                    </TableData>
                                     <TableData>
                                         <div class="flex justify-around">
                                             <ButtonLink :link="route('admin.movies.edit', movie.id)">Edit</ButtonLink>
