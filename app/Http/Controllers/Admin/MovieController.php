@@ -3,8 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use Inertia\Inertia;
-use Illuminate\Http\Request;
+use App\Models\Movie;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Request;
 
 class MovieController extends Controller
 {
@@ -15,7 +16,17 @@ class MovieController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Movies/Index');
+        $perPage = Request::input('perPage') ?: 5;
+        
+        return Inertia::render('Movies/Index', [
+            'movies' => Movie::query()
+                ->when(Request::input('search'), function($query, $search) {
+                    $query->where('title', 'like', "%{$search}%");      
+                })
+                ->paginate($perPage)
+                ->withQueryString(),
+            'filters' => Request::only(['search', 'perPage'])
+        ]); 
     }
 
     /**
