@@ -70,8 +70,89 @@
                         <div class="w-full overflow-x-auto">
                             <Table>
                                 <template #tableHead>
-                                    <TableHead>Title</TableHead>
-                                    <TableHead>Slug</TableHead>
+                                    <TableHead class="cursor-pointer" @click="sort('title')">
+                                        <div class="flex space-x-4 content-center">
+                                            <span>Title</span>
+                                            <svg
+                                                v-if="
+                                                movieFilters.column == 'title' &&
+                                                movieFilters.direction == 'desc'
+                                                "
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                class="h-5 w-5 text-indigo-700"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M17 13l-5 5m0 0l-5-5m5 5V6"
+                                                />
+                                            </svg>
+                                            <svg
+                                                v-if="
+                                                movieFilters.column == 'title' &&
+                                                movieFilters.direction == 'asc'
+                                                "
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                class="h-5 w-5 text-indigo-700"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M7 11l5-5m0 0l5 5m-5-5v12"
+                                                />
+                                            </svg>
+                                        </div>
+                                    </TableHead>
+                                    <TableHead class="cursor-pointer" @click="sort('rating')">
+                                         <div class="flex space-x-4 content-center">
+                                            <span>Rating</span>
+                                            <svg
+                                                v-if="
+                                                movieFilters.column == 'rating' &&
+                                                movieFilters.direction == 'desc'
+                                                "
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                class="h-5 w-5 text-indigo-700"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M17 13l-5 5m0 0l-5-5m5 5V6"
+                                                />
+                                            </svg>
+                                            <svg
+                                                v-if="
+                                                movieFilters.column == 'rating' &&
+                                                movieFilters.direction == 'asc'
+                                                "
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                class="h-5 w-5 text-indigo-700"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                stroke="currentColor"
+                                            >
+                                                <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M7 11l5-5m0 0l5 5m-5-5v12"
+                                                />
+                                            </svg>
+                                        </div>
+                                    </TableHead>
+                                    <TableHead @click="sort('visits')">Visits</TableHead>
                                     <TableHead>Poster</TableHead>
                                     <TableHead>Public</TableHead>
                                     <TableHead>Manage</TableHead>
@@ -80,7 +161,8 @@
                                     v-for="movie in movies.data"
                                     :key="movie.id">
                                     <TableData>{{ movie.title }}</TableData>
-                                    <TableData>{{ movie.slug }}</TableData>
+                                    <TableData>{{ movie.rating }}</TableData>
+                                    <TableData>{{ movie.visits }}</TableData>
                                     <TableData>
                                         <img
                                             class="h-12 w-12 rounded"
@@ -160,7 +242,9 @@ const props = defineProps({
 
 const movieFilters = reactive({
     search: props.filters.search,
-    perPage: props.filters.perPage
+    perPage: props.filters.perPage,
+    column: props.filters.column,
+    direction: props.filters.direction,
 })
 
 const movieTMDBId = ref("");
@@ -200,6 +284,11 @@ watch(movieFilters,
 //        }
 //    )
 //}
+
+function sort(column) {
+    movieFilters.column = column;
+    movieFilters.direction = movieFilters.direction === 'asc' ? 'desc' : 'asc';
+}
 
 function generateMovie() {
     Inertia.post('/admin/movies', 
