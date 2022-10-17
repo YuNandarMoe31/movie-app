@@ -69,22 +69,82 @@
                                     :class="{ 'opacity-25': form.processing }"
                                     :disabled="form.processing"
                                 >
-                                    Update
+                                    add trailer
                                 </button>
                             </div>
                         </form>
                     </div>
 
                     <div
-                        class="w-full sm:max-w-md p-6 mb-8 bg-white overflow-hidden rounded-lg shadow-lg"
+                        class="w-full sm:max-w-md p-6 mb-8 bg-white rounded-lg shadow-lg"
                     >
-                        Cast form
+                        <div>
+                            <div class="flex">
+                                <div
+                                    class="m-2 p-1 text-xs"
+                                    v-for="mc in movieCasts"
+                                    :key="mc.id"
+                                    >
+                                    {{ mc.name }}
+                                </div>
+                            </div>
+                            <form @submit.prevent="addCast">
+                                <multiselect
+                                    v-model="castForm.casts"
+                                    :options="casts"
+                                    :multiple="true"
+                                    :close-on-select="false"
+                                    :clear-on-select="false"
+                                    :preserve-search="true"
+                                    placeholder="Add Casts"
+                                    label="name"
+                                    track-by="name"
+                                    >
+                                </multiselect> 
+                                <div class="mt-2">
+                                    <button                                     type="submit"
+                                     class="px-4 py-2 bg-indigo-500 hover:bg-indigo-700 text-white rounded"
+                                    >add casts
+                                    </button>
+                                </div>  
+                            </form>                     
+                        </div>
                     </div>
 
                     <div
-                        class="w-full sm:max-w-md p-6 mb-8 bg-white overflow-hidden rounded-lg shadow-lg"
+                        class="w-full sm:max-w-md p-6 mb-8 bg-white rounded-lg shadow-lg"
                     >
-                        Tags form
+                        <div>
+                            <div class="flex">
+                                <div
+                                    class="m-2 p-1 text-xs"
+                                    v-for="mt in movieTags"
+                                    :key="mt.id"
+                                    >
+                                    {{ mt.tag_name }}
+                                </div>
+                            </div>
+                            <form @submit.prevent="addTag">
+                                <multiselect
+                                    v-model="tagForm.tags"
+                                    :options="tags"
+                                    :multiple="true"
+                                    :close-on-select="false"
+                                    :clear-on-select="false"
+                                    :preserve-search="true"
+                                    placeholder="Add tags"
+                                    label="tag_name"
+                                    track-by="tag_name"
+                                    >
+                                </multiselect> 
+                                <div class="mt-2">
+                                    <button type="submit"
+                                     class="px-4 py-2 bg-indigo-500 hover:bg-indigo-700 text-white rounded"
+                                    >add tags
+                                    </button>
+                                </div>  
+                            </form>                     
+                        </div>
                     </div>
                 </section>
             </div>
@@ -101,15 +161,28 @@ import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import Checkbox from '@/Components/Checkbox.vue';
+import Multiselect from 'vue-multiselect'
 
 const props = defineProps({
     movie: Object,
     trailers: Array,
+    casts: Array,
+    tags: Array,
+    movieTags: Array,
+    movieCasts: Array,
 });
 
 const form = useForm({
     name: "",
     embed_html: "",
+});
+
+const castForm = useForm({
+    casts: props.movieCasts,
+});
+
+const tagForm = useForm({
+    tags: props.movieTags,
 });
 
 function submitTrailer() {
@@ -118,4 +191,21 @@ function submitTrailer() {
     });
 }
 
+function addCast() {
+    castForm.post(`/admin/movies/${props.movie.id}/add-casts`, {
+        preserveState: true,
+        preserveScroll: true,
+    });
+}
+
+function addTag() {
+    tagForm.post(`/admin/movies/${props.movie.id}/add-tags`, {
+        preserveState: true,
+        preserveScroll: true,
+    });
+}
+
 </script>
+
+<style src="vue-multiselect/dist/vue-multiselect.css"></style>
+

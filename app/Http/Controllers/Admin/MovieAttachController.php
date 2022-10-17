@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\Tag;
+use App\Models\Cast;
 use Inertia\Inertia;
 use App\Models\Movie;
 use App\Models\TrailerUrl;
@@ -20,6 +22,10 @@ class MovieAttachController extends Controller
         return Inertia::render('Movies/Attach', [
             'movie' => $movie,
             'trailers' => $movie->trailers,
+            'casts' => Cast::all('id', 'name'),
+            'tags' => Tag::all('id', 'tag_name'),
+            'movieCasts' => $movie->casts,
+            'movieTags' => $movie->tags
         ]);
     }
 
@@ -36,38 +42,21 @@ class MovieAttachController extends Controller
         ]));
         return redirect()->back()->with('flash.banner', 'Trailer Added.');
     }
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
+
+    public function addCast(Movie $movie)
     {
-        //
+        $casts = Request::input('casts');
+        $cast_ids = collect($casts)->pluck('id');
+        $movie->casts()->sync($cast_ids);
+        return redirect()->back()->with('flash.banner', 'Casts attached.');
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function addTag(Movie $movie)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
+        $tags = Request::input('tags');
+        $tag_ids = collect($tags)->pluck('id');
+        $movie->tags()->sync($tag_ids);
+        return redirect()->back()->with('flash.banner', 'Tags attached.');
     }
 
     /**
