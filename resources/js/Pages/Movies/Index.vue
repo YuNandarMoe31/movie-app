@@ -47,7 +47,7 @@
                                     </div>
 
                                     <input
-                                        v-model="search"
+                                        v-model="movieFilters.search"
                                         type="text"
                                         placeholder="Search by title"
                                         class="px-8 py-3 w-full md:w-2/6 rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 text-sm"
@@ -56,8 +56,8 @@
                             </div>
                             <div class="flex">
                                 <select
-                                    v-model="perPage"
-                                    @change="getMovies"
+                                    v-model="movieFilters.perPage"
+                                    @change="movieFilters.perPage === $event.target.value"
                                     class="px-4 py-3 w-full rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0 text-sm"
                                 >
                                     <option value="5">5 Per Page</option>
@@ -149,37 +149,57 @@ import Table from '@/Components/Table.vue'
 import Pagination from '@/Components/Pagination.vue'
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 import { Link } from "@inertiajs/inertia-vue3";
-import { ref, watch, defineProps } from 'vue';
+import { ref, reactive, watch, defineProps } from 'vue';
 import { Inertia } from "@inertiajs/inertia";
+import { throttle, pickBy } from "lodash";
 
 const props = defineProps({
     movies: Object,
     filters: Object
 });
 
-const search = ref(props.filters.search);
-const perPage = ref(props.filters.perPage);
+const movieFilters = reactive({
+    search: props.filters.search,
+    perPage: props.filters.perPage
+})
+
 const movieTMDBId = ref("");
 
-watch(search, value => {
-    Inertia.get('/admin/movies',
-        { search: value, perPage: perPage.value },
-        {
+watch(movieFilters, 
+    throttle(() => {
+        let query = pickBy(movieFilters);
+        let queryRoute = route('admin.movies.index', Object.keys(query).length ? query : {
+            remember: 'forget'
+        });
+        Inertia.get(queryRoute, {}, {
             preserveState: true,
-            replace: true
-        }
-    )
-});
+            replace: true,
+        })
+    }, 500),
+    {
+        deep: true,
+    }
+)
 
-function getMovies() {
-    Inertia.get('/admin/movies',
-        { perPage: perPage.value, search: search.value },
-        {
-            preserveState: true,
-            replace: true
-        }
-    )
-}
+//watch(search, value => {
+//    Inertia.get('/admin/movies',
+//        { search: value, perPage: perPage.value },
+//        {
+//            preserveState: true,
+//            replace: true
+//        }
+//    )
+//});
+
+//function getMovies() {
+//    Inertia.get('/admin/movies',
+//        { perPage: perPage.value, search: search.value },
+//        {
+//            preserveState: true,
+//            replace: true
+//        }
+//    )
+//}
 
 function generateMovie() {
     Inertia.post('/admin/movies', 
