@@ -10,16 +10,34 @@ use App\Http\Controllers\Admin\MovieController;
 use App\Http\Controllers\Admin\SeasonController;
 use App\Http\Controllers\Admin\TvShowController;
 use App\Http\Controllers\Admin\EpisodeController;
+use App\Http\Controllers\Front\WelcomeController;
 use App\Http\Controllers\Admin\MovieAttachController;
+use App\Http\Controllers\Front\TagController as FrontTagController;
+use App\Http\Controllers\Front\CastController as FrontCastController;
+use App\Http\Controllers\Front\GenreController as FrontGenreController;
+use App\Http\Controllers\Front\MovieController as FrontMovieController;
+use App\Http\Controllers\Front\TvShowController as FrontTvShowController;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+//Route::get('/', function () {
+//    return Inertia::render('Welcome', [
+//        'canLogin' => Route::has('login'),
+//        'canRegister' => Route::has('register'),
+//        'laravelVersion' => Application::VERSION,
+//        'phpVersion' => PHP_VERSION,
+//    ]);
+//});
+
+Route::get('/', [WelcomeController::class, 'index']);
+Route::get('/movies', [FrontMovieController::class, 'index'])->name('movies.index');
+Route::get('/movies/{movie:slug}', [FrontMovieController::class, 'show'])->name('movies.show');
+Route::get('/tv-shows', [FrontTvShowController::class, 'index'])->name('tvShows.index');
+Route::get('/tv-shows/{tv_show:slug}', [FrontTvShowController::class, 'show'])->name('tvShows.show');
+Route::get('/tv-shows/{tv_show:slug}/seasons/{season:slug}', [FrontTvShowController::class, 'seasonShow'])->name('season.show');
+Route::get('/episodes/{episode:slug}', [FrontTvShowController::class, 'showEpisode'])->name('episodes.show');
+Route::get('/casts', [FrontCastController::class, 'index'])->name('casts.index');
+Route::get('/casts/{cast:slug}', [FrontCastController::class, 'show'])->name('casts.show');
+Route::get('/genres/{genre:slug}', [FrontGenreController::class, 'show'])->name('genres.show');
+Route::get('/tags/{tag:slug}', [FrontTagController::class, 'show'])->name('tags.show');
 
 Route::middleware([
     'auth:sanctum',

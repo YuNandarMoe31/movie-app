@@ -125,6 +125,30 @@
             href="/casts"
             >Casts</Link
             >
+            <!--<Link
+            v-for="genre in $page.props.genres" :key="genre.id"
+            class="
+                bg-transparent
+                px-4
+                py-2
+                mt-2
+                text-sm
+                font-semibold
+                rounded-lg
+                dark:hover:bg-gray-600
+                dark:focus:bg-gray-600
+                dark:focus:text-white
+                dark:hover:text-white
+                dark:text-gray-200
+                md:mt-0 md:ml-4
+                hover:text-gray-900
+                focus:text-gray-900
+                hover:bg-gray-200
+                focus:bg-gray-200 focus:outline-none focus:shadow-outline
+            "
+            :href="`/geres/${genre.slug}`"
+            >{{ genre.title }}</Link
+            >-->
             <Dropdown />
         </nav>
         </div>
